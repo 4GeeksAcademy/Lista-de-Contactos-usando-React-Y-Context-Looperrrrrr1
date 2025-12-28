@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from "react"; 
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; 
+import { ContactCard } from "../components/ContactCard";
 
 export const Home = () => {
 
@@ -19,13 +20,13 @@ export const Home = () => {
         if (data) {
           dispatch({
             type: "load_contacts",
-            payload: data.contacts
+            payload: data.contacts 
           });
         }
       })
       .catch(error => console.log("Error cargando contactos:", error));
 
-  }, []);
+  }, []); 
 
   const createAgenda = () => {
     fetch("https://playground.4geeks.com/contact/agendas/" + store.mySlug, {
@@ -37,58 +38,48 @@ export const Home = () => {
   }
 
   const handleDelete = (id) => {
-    fetch("https://playground.4geeks.com/contact/agendas/" + store.mySlug + "/contacts/" + id, {
-      method: "DELETE"
-    })
-      .then(response => {
+     const confirmDelete = window.confirm("¿Estás seguro de que quieres borrar este contacto?");
+     if (!confirmDelete) return; 
+
+     fetch("https://playground.4geeks.com/contact/agendas/" + store.mySlug + "/contacts/" + id, {
+        method: "DELETE"
+     })
+     .then(response => {
         if (response.ok) {
-          dispatch({
-            type: "delete_contact",
-            payload: id
-          });
+           dispatch({
+              type: "delete_contact",
+              payload: id
+           });
         } else {
-          console.log("Error al borrar");
+           console.log("Error al borrar");
         }
-      });
+     });
   };
 
   return (
     <div className="container mt-5">
-      <h1>Mi Lista de Contactos</h1>
+      <h1 className="text-center mb-4">Mi Lista de Contactos</h1>
 
-      <Link to="/add">
-        <button className="btn btn-success mb-3">Añadir nuevo contacto</button>
-      </Link>
-
+      <div className="text-end mb-3">
+          <Link to="/add">
+            <button className="btn btn-success">Añadir nuevo contacto</button>
+          </Link>
+      </div>
+      
       <ul className="list-group">
         {store.contacts.map((contact, index) => (
-          <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-
-            <div>
-              <h5 className="mb-1">{contact.name}</h5>
-              <p className="mb-0 text-muted">📞 {contact.phone}</p>
-              <small className="text-muted">✉️ {contact.email}</small>
-            </div>
-
-            <div>
-              <Link to={"/edit/" + contact.id} className="btn btn-sm btn-outline-primary me-2">
-                ✏️
-              </Link>
-
-              <button
-                className="btn btn-sm btn-outline-danger"
-                onClick={() => handleDelete(contact.id)}
-              >
-                🗑️
-              </button>
-            </div>
-
-          </li>
+          <ContactCard 
+            key={index} 
+            contact={contact} 
+            onDelete={handleDelete} 
+          />
         ))}
       </ul>
 
       {store.contacts.length === 0 && (
-        <p className="text-muted">No hay contactos todavía... ¡Añade tu primer contacto!</p>
+        <div className="text-center mt-5 text-muted">
+            <p>No tienes contactos. ¡Añade uno!</p>
+        </div>
       )}
     </div>
   );
