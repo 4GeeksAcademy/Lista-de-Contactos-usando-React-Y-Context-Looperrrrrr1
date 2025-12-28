@@ -78,7 +78,7 @@ export const Home = () => {
 
       {store.contacts.length === 0 && (
         <div className="text-center mt-5 text-muted">
-            <p>No tienes contactos. ¡Añade uno!</p>
+            <p>No tienes contactos... ¡Añade uno!</p>
         </div>
       )}
     </div>
